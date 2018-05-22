@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayoutJoinActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorLightBlue">
+    android:background="@color/colorLightBlue"
+    android:orientation="vertical">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <ImageView
         android:id="@+id/imageViewLogo"
@@ -42,7 +43,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="visible"
+            tools:visibility="visible">
 
             <EditText
                 android:id="@+id/editTextInputEmail"
@@ -55,6 +57,7 @@
                 android:background="@drawable/edittext_rectangle"
                 android:hint="@string/edittext_hint_email"
                 android:inputType="textEmailAddress"
+                android:maxLength="@integer/email_max_length"
                 android:paddingLeft="10dp"
                 android:textSize="18dp" />
 
@@ -67,7 +70,8 @@
                 android:text="중복확인"
                 android:textColor="@color/colorWhite"
                 android:textSize="16dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <EditText
                 android:id="@+id/editTextInputPasswordFirst"
@@ -80,6 +84,7 @@
                 android:background="@drawable/edittext_rectangle"
                 android:hint="@string/edittext_hint_password"
                 android:inputType="textPassword"
+                android:maxLength="@integer/password_max_length"
                 android:paddingLeft="10dp"
                 android:textSize="18dp" />
 
@@ -95,6 +100,7 @@
                 android:background="@drawable/edittext_rectangle"
                 android:hint="@string/edittext_hint_password_confirm"
                 android:inputType="textPassword"
+                android:maxLength="@integer/password_max_length"
                 android:paddingLeft="10dp"
                 android:textSize="18dp" />
 
@@ -115,14 +121,31 @@
             android:layout_marginBottom="24dp"
             android:layout_marginTop="24dp"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="gone">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circleImageViewProfileImage"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_profile_default_48dp" />
+            <FrameLayout
+                android:id="@+id/frameLayoutProfileImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/circleImageViewProfileImage"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:src="@drawable/ic_profile_default_48dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:src="@android:drawable/ic_menu_camera"
+                    app:civ_border_color="#03A9F4"
+                    app:civ_border_width="2dp"
+                    app:civ_circle_background_color="@color/colorGray" />
+            </FrameLayout>
+
 
             <EditText
                 android:id="@+id/editTextNickname"
@@ -133,6 +156,7 @@
                 android:background="@drawable/edittext_rectangle"
                 android:hint="@string/edittext_hint_nickname"
                 android:inputType="textPersonName"
+                android:maxLength="@integer/nickname_max_length"
                 android:paddingLeft="10dp"
                 android:textSize="18dp" />
 
@@ -167,12 +191,12 @@
             android:background="@drawable/selector_join_button"
             android:clickable="true"
             android:gravity="center"
+            android:maxLength="@integer/nickname_max_length"
             android:text="@string/save_profile_info"
             android:textColor="@color/colorBlack"
             android:textStyle="bold"
             android:visibility="gone" />
     </FrameLayout>
-
 
 
 </LinearLayout>

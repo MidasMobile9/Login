@@ -13,15 +13,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.test.login.R;
+import com.test.login.util.ImageUtil;
 import com.test.login.util.Permission;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +60,8 @@ public class JoinActivity extends AppCompatActivity {
     /**프로필 뷰*/
     @BindView(R.id.linearLayoutProfileInfo)
     LinearLayout linearLayoutProfileInfo;
+    @BindView(R.id.frameLayoutProfileImage)
+    FrameLayout frameLayoutProfileImage;
     @BindView(R.id.circleImageViewProfileImage)
     CircleImageView circleImageViewProfileImage;
     @BindView(R.id.editTextNickname)
@@ -61,12 +69,18 @@ public class JoinActivity extends AppCompatActivity {
     @BindView(R.id.textViewSaveProfile)
     TextView textViewSaveProfile;
 
-    private String email;
-    private String password;
+    private String strEmail;
+    private String strPassWord;
+    private String strNickName;
+
     private Permission mPermission;
     private String[] permissions= {Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA};
+
+    private final int PICK_FROM_ALBUM = 1;
+    private Uri mImageCaptureUri = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,119 +90,148 @@ public class JoinActivity extends AppCompatActivity {
         mPermission.setSnackbar(linearLayoutJoinActivity,getString(R.string.permission_snackbar_text),getString(R.string.permission_snackbar_text_rational));
     }
 
+
     /**
-     * 가입하기 버튼 클릭 이벤트
+     * 가입하기-프로필저장 버튼 클릭 이벤트
      * */
-    @OnClick({R.id.textViewDoJoin})
+    @OnClick({R.id.textViewDoJoin,R.id.textViewSaveProfile})
     public void onClickJoinButtonJoin(View view){
-        email = editTextInputEmail.getText().toString().trim();
-        password = editTextInputPasswordFirst.getText().toString().trim();
+        switch (view.getId()){
+            //가입하기
+            case R.id.textViewDoJoin:
+                strEmail = editTextInputEmail.getText().toString();
+                strPassWord = editTextInputPasswordFirst.getText().toString();
+                if(!emailCheck(strEmail)){
+                    return;
+                }
+                if(!passwordCheck(strPassWord)){
+                    return;
+                }
+                textViewDoJoin.setVisibility(View.GONE);
+                linearLayoutEmailPassword.setVisibility(View.GONE);
 
-        textViewDoJoin.setVisibility(View.GONE);
-        linearLayoutEmailPassword.setVisibility(View.GONE);
+                textViewSaveProfile.setVisibility(View.VISIBLE);
+                linearLayoutProfileInfo.setVisibility(View.VISIBLE);
+                break;
+            //프로필저장
+            case R.id.textViewSaveProfile:
+                strNickName = editTextNickname.getText().toString().trim();
+                if(!nicknameCheck(strNickName)){
+                    return;
+                }
+                //여기서 서버로 전송 ㄱㄱ
+                finish();
+                break;
+        }
+    }
 
-        textViewSaveProfile.setVisibility(View.VISIBLE);
-        linearLayoutProfileInfo.setVisibility(View.VISIBLE);
+    /**
+     * 이메일 체크
+     * */
+    private boolean emailCheck(String email){
+        if(email.length()==0){
+            //이메일 길이가 0일 경우
+            Toast.makeText(mContext, getString(R.string.email_length_zero), Toast.LENGTH_SHORT).show();
+            editTextInputEmail.requestFocus();
+            return false;
+        }
+        String emailRegExp = "[\\w\\~\\-\\.]+@[\\w\\~\\-]+(\\.[\\w\\~\\-]+)+";
+        Matcher matcher = Pattern.compile(emailRegExp).matcher(email);
+        if(!matcher.matches()){
+            //이메일 형식이 아닐 경우
+            Toast.makeText(mContext, getString(R.string.email_combination), Toast.LENGTH_SHORT).show();
+            editTextInputEmail.requestFocus();
+            return false;
+        }
+        //서버 중복확인 필요
+        return true;
+    }
+    /**
+     * 비밀번호 체크
+     * */
+    private boolean passwordCheck(String password){
+        if(password.length()==0){
+            //비밀번호 길이가 0일 경우
+            Toast.makeText(mContext, getString(R.string.password_length_zero), Toast.LENGTH_SHORT).show();
+            editTextInputPasswordFirst.requestFocus();
+            return false;
+        }
+        String pwPattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{9,12}$";
+        Matcher matcher = Pattern.compile(pwPattern).matcher(password);
+        pwPattern = "(.)\\1\\1\\1";
+        Matcher matcher2 = Pattern.compile(pwPattern).matcher(password);
+        if(!matcher.matches()){
+            //영문 숫자 특수문자 구분
+            Toast.makeText(mContext, getString(R.string.password_combination), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(matcher2.find()){
+            //같은 문자 4자리 이상
+            Toast.makeText(mContext, getString(R.string.password_repeat), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(password.contains(strEmail)){
+            //아이디 포함 여부
+            Toast.makeText(mContext, getString(R.string.password_contain_id), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(password.contains(" ")){
+            //공백문자 사용 불가
+            Toast.makeText(mContext, getString(R.string.password_blank), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(!password.equals(editTextInputPasswordSecond.getText().toString())){
+            //비밀번호 확인
+            Toast.makeText(mContext, getString(R.string.password_not_matched), Toast.LENGTH_SHORT).show();
+            editTextInputPasswordSecond.requestFocus();
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 닉네임 체크
+     * */
+    private boolean nicknameCheck(String nickname){
+        if(nickname.length()==0){
+            //닉네임 길이가 0일 경우
+            Toast.makeText(mContext, getString(R.string.nickname_length_zero), Toast.LENGTH_SHORT).show();
+            editTextNickname.requestFocus();
+            return false;
+        }
+        //서버 중복확인 필요
+        return true;
     }
     /**
      * 프로필 사진 클릭 이벤트
      * */
-    @OnClick({R.id.circleImageViewProfileImage})
+    @OnClick({R.id.frameLayoutProfileImage})
     public void onClickJoinCircleImageViewProfileImage(View view){
-        if(!mPermission.checkPermissions())
+        if(!mPermission.checkPermissions()){
+            Toast.makeText(mContext, getString(R.string.permission_snackbar_text), Toast.LENGTH_SHORT).show();
             return;
-        doTakeAlbumAction();
-    }
-
-    private final int PICK_FROM_CAMERA = 0;
-    private final int PICK_FROM_ALBUM = 1;
-    private final int CROP_FROM_CAMERA = 2;
-    private boolean isImageSelected=false;
-    private Uri mImageCaptureUri;
-    /**
-     * 앨범에서 이미지 가져오기
-     */
-    private void doTakeAlbumAction() {
-        // 앨범 호출
+        }
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(intent, PICK_FROM_ALBUM);
     }
 
+    /**
+     * 앨범에서 이미지를 가져온 후 이미지 세팅.
+     * */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             return;
         }
         switch (requestCode) {
-            case CROP_FROM_CAMERA: {
-                // 크롭이 된 이후의 이미지를 넘겨 받습니다.
-                // 이미지뷰에 이미지를 보여준다거나 부가적인 작업 이후에
-                // 임시 파일을 삭제합니다.
-                final Bundle extras = data.getExtras();
-                if (extras != null) {
-                    Bitmap photo = extras.getParcelable("data");
-                    cropImage(photo, Environment.getExternalStorageDirectory().getAbsolutePath() + "/sample.png");
-                    isImageSelected=true;
-                }
-                // 임시 파일 삭제
-                File f = new File(mImageCaptureUri.getPath());
-                if (f.exists()) {
-                    f.delete();
-                }
-                break;
-            }
-
             case PICK_FROM_ALBUM: {
                 mImageCaptureUri = data.getData();
-            }
-            case PICK_FROM_CAMERA: {
-                // 이미지를 가져온 이후의 리사이즈할 이미지 크기를 결정합니다.
-                // 이후에 이미지 크롭 어플리케이션을 호출하게 됩니다.
-                Intent intent = new Intent("com.android.camera.action.CROP");
-                intent.setDataAndType(mImageCaptureUri, "image/*");
-                intent.putExtra("aspectX", 1);      //정사각형
-                intent.putExtra("aspectY", 1);
-                //set crop properties
-                //indicate output X and Y
-                intent.putExtra("outputX", 300);
-                intent.putExtra("outputY", 300);
-                //retrieve data on return
-                intent.putExtra("scale", true);
-                intent.putExtra("return-data", true);
-                startActivityForResult(intent, CROP_FROM_CAMERA);
+                Glide.with(mContext)
+                        .load(mImageCaptureUri)
+                        .into(circleImageViewProfileImage);
                 break;
             }
         }
     }
 
-    private void cropImage(Bitmap bitmap,String filePath){
-        String tempPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File image = new File(tempPath);
-        if(!image.exists()){      //폴더 없으면 새로 만들기
-            image.mkdir();
-        }
-        File copyFile = new File(filePath);
-        BufferedOutputStream outputStream = null;
-        try{
-            copyFile.createNewFile();
-            outputStream = new BufferedOutputStream(new FileOutputStream(copyFile));
-            bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                    Uri.fromFile(copyFile)));
-            outputStream.flush();
-            outputStream.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        File f = new File(mImageCaptureUri.getPath());
-        if (f.exists()) {
-            f.delete();
-        }
-    }
 }

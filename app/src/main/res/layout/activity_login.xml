@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayoutLoginActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -38,6 +39,7 @@
         android:layout_marginTop="30dp"
         android:background="@drawable/edittext_rectangle"
         android:hint="@string/edittext_hint_email"
+        android:maxLength="@integer/email_max_length"
         android:inputType="textEmailAddress"
         android:paddingLeft="10dp" />
 
@@ -49,6 +51,7 @@
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
         android:layout_marginTop="10dp"
+        android:maxLength="@integer/password_max_length"
         android:background="@drawable/edittext_rectangle"
         android:hint="@string/edittext_hint_password"
         android:inputType="textPassword"
@@ -58,7 +61,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        tools:visibility="visible">
 
         <CheckBox
             android:id="@+id/checkBoxAutoLogin"
