@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setBottomNavigationView();
 
         Log.d("오승훈", "temp");
+        Log.d("최영진", "temp");
     }
 
     public void setBottomNavigationView() {
