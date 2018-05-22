@@ -145,7 +145,7 @@ public class ProfileManagerActivity extends AppCompatActivity {
         finish();
     }
 
-    @OnClick(R.id.changeProfileImage)
+    @OnClick(R.id.circleImageViewProfileManagerProfileImage)
     public void onChangeProfileImageClick(){
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -156,6 +156,8 @@ public class ProfileManagerActivity extends AppCompatActivity {
     @OnClick(R.id.textViewProfileManagerDelete)
     public void onProfileDeleteClick(){
         final Intent profileDeleteIntent = new Intent(this, LoginActivity.class);
+        profileDeleteIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        profileDeleteIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText passwordEditText = new EditText(this);
@@ -167,6 +169,9 @@ public class ProfileManagerActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(passwordEditText.getText().toString().equals(getPasswordFromServer())){
+                            /**
+                             * 서버에서 회원 정보 삭제
+                             */
                             startActivity(profileDeleteIntent);
                             finish();
                         } else {
