@@ -33,9 +33,8 @@
     <string name="permission_snackbar_text">권한 거절</string>
     <string name="permission_snackbar_text_rational">권한 거절2</string>
 
-<<<<<<< HEAD
     <string name="profile_delete_alert_dialog">회원 탈퇴를 진행하시려면 비밀번호를 한번 더 입력해 주세요.</string>
-=======
+
     <string name="email_length_zero">이메일을 입력해 주세요.</string>
     <string name="email_combination">이메일 형식을 확인해 주세요.</string>
 
@@ -47,5 +46,4 @@
     <string name="password_not_matched">비밀번호를 다시 확인해 주세요.</string>
 
     <string name="nickname_length_zero">닉네임을 입력해 주세요.</string>
->>>>>>> origin/PIJ/SignUpLoginProfile
 </resources>
