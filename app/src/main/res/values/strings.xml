@@ -29,4 +29,7 @@
     <string name="edittext_hint_password">&#160;비밀번호</string>
     <string name="edittext_hint_password_confirm">&#160;비밀번호 확인</string>
     <string name="edittext_hint_nickname">&#160;닉네임</string>
+
+    <string name="permission_snackbar_text">권한 거절</string>
+    <string name="permission_snackbar_text_rational">권한 거절2</string>
 </resources>
