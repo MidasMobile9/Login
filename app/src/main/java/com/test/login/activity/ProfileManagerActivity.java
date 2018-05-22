@@ -2,6 +2,7 @@ package com.test.login.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.test.login.R;
+import com.test.login.util.ImageUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +35,8 @@ public class ProfileManagerActivity extends AppCompatActivity {
 
     @BindView(R.id.changeProfileImage)
     ImageView changeProfileImage;
+    @BindView(R.id.circleImageViewProfileManagerProfileImage)
+    ImageView circleImageViewProfileManagerProfileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,8 @@ public class ProfileManagerActivity extends AppCompatActivity {
             case REQUEST_TAKE_PROFILE_FROM_ALBUM:
                 if(resultCode == Activity.RESULT_OK){
                     Uri profileImageUri = data.getData();
+                    Bitmap resizeBitmap = ImageUtil.scaleImageDown(this, profileImageUri);
+                    circleImageViewProfileManagerProfileImage.setImageBitmap(resizeBitmap);
                 }
                 break;
         }
