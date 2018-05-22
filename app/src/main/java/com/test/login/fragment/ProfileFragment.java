@@ -1,20 +1,30 @@
 package com.test.login.fragment;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.test.login.R;
 import com.test.login.activity.MainActivity;
+import com.test.login.activity.ProfileManagerActivity;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class ProfileFragment extends Fragment {
+    public static final int REQUEST_CODE_PROFILE_MANAGER_ACTIVITY = 301;
+
+    public static String USER_NAME;
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -45,7 +55,7 @@ public class ProfileFragment extends Fragment {
         super.onAttach(context);
 
         this.mContext = context;
-        this.mActivity = (MainActivity)getActivity();
+        this.mActivity = (MainActivity) getActivity();
     }
 
     @Override
@@ -59,7 +69,7 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_profile, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_profile, container, false);
         // 버터나이프
         unbinder = ButterKnife.bind(this, rootView);
         return rootView;
@@ -77,4 +87,20 @@ public class ProfileFragment extends Fragment {
         this.mActivity = null;
     }
 
+    @OnClick(R.id.textViewProfileFragmentModifyProfile)
+    public void onModifyProfileCllick() {
+        Intent intent = new Intent(mContext, ProfileManagerActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_PROFILE_MANAGER_ACTIVITY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PROFILE_MANAGER_ACTIVITY:
+                if (resultCode == Activity.RESULT_OK) {
+
+                }
+                break;
+        }
+    }
 }
