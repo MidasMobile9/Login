@@ -9,8 +9,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.test.login.R;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,13 +46,18 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * 로그인 버튼 클릭 이벤트
      * */
-    @OnClick({R.id.textViewJoin})
+    @OnClick({R.id.buttonLogin})
     public void onClickLoginButtonLogin(View view){
-        String email = editTextEmail.getText().toString().trim();
-        String pw = editTextPassword.getText().toString().trim();
-
+        String strEmail = editTextEmail.getText().toString();
+        String strPassword = editTextPassword.getText().toString();
+        if(!emailCheck(strEmail))
+            return;
+        if(!passwordCheck(strPassword))
+            return;
+        //여기서 서버로 확인 ㄱㄱ
         Intent intent = new Intent(mContext,MainActivity.class);
         startActivity(intent);
+        finish();
     }
     /**
      * 회원가입 버튼 클릭 이벤트
@@ -57,5 +66,29 @@ public class LoginActivity extends AppCompatActivity {
     public void onClickLoginButtonJoin(View view){
         Intent intent = new Intent(mContext,JoinActivity.class);
         startActivity(intent);
+    }
+    /**
+     * 이메일 체크
+     * */
+    private boolean emailCheck(String email){
+        if(email.length()==0){
+            //이메일 길이가 0일 경우
+            Toast.makeText(mContext, getString(R.string.email_length_zero), Toast.LENGTH_SHORT).show();
+            editTextEmail.requestFocus();
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 비밀번호 체크
+     * */
+    private boolean passwordCheck(String password){
+        if(password.length()==0){
+            //비밀번호 길이가 0일 경우
+            Toast.makeText(mContext, getString(R.string.password_length_zero), Toast.LENGTH_SHORT).show();
+            editTextPassword.requestFocus();
+            return false;
+        }
+        return true;
     }
 }
