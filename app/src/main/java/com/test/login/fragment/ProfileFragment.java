@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.test.login.R;
+import com.test.login.activity.LoginActivity;
 import com.test.login.activity.MainActivity;
 import com.test.login.activity.ProfileManagerActivity;
 
@@ -87,12 +88,6 @@ public class ProfileFragment extends Fragment {
         this.mActivity = null;
     }
 
-    @OnClick(R.id.textViewProfileFragmentModifyProfile)
-    public void onModifyProfileCllick() {
-        Intent intent = new Intent(mContext, ProfileManagerActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_PROFILE_MANAGER_ACTIVITY);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -108,5 +103,18 @@ public class ProfileFragment extends Fragment {
                 }
                 break;
         }
+    }
+
+    @OnClick(R.id.textViewProfileFragmentModifyProfile)
+    public void onModifyProfileCllick() {
+        Intent intent = new Intent(mContext, ProfileManagerActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_PROFILE_MANAGER_ACTIVITY);
+    }
+
+    @OnClick(R.id.textViewProfileFragmentLogout)
+    public void onProfileLogoutClick(){
+        final Intent profileDeleteIntent = new Intent(mContext, LoginActivity.class);
+        startActivity(profileDeleteIntent);
+        mActivity.finish();
     }
 }
