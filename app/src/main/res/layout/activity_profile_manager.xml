@@ -24,14 +24,14 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/imageViewProfileManagerBack"
-                    android:layout_width="35dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:paddingBottom="13dp"
-                    android:paddingRight="13dp"
-                    android:paddingTop="13dp"
-                    android:src="@drawable/ic_back_48dp" />
+                  android:id="@+id/imageViewProfileManagerBack"
+                  android:layout_width="35dp"
+                  android:layout_height="match_parent"
+                  android:layout_gravity="center"
+                  android:paddingBottom="13dp"
+                  android:paddingRight="13dp"
+                  android:paddingTop="13dp"
+                  android:src="@drawable/ic_back_48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,6 +66,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
+        android:id="@+id/contentsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -101,16 +102,29 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/circleImageViewProfileManagerProfileImage"
-            android:layout_width="84dp"
-            android:layout_height="84dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/ic_profile_black_48dp"
-            app:civ_border_color="@color/colorLightGray"
-            app:civ_border_width="2dp" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleImageViewProfileManagerProfileImage"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:layout_gravity="center"
+                android:padding="4dp"
+                android:src="@drawable/ic_profile_black_48dp"
+                app:civ_border_color="@color/colorLightGray"
+                app:civ_border_width="2dp" />
+
+            <ImageView
+                android:id="@+id/changeProfileImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:background="@android:color/white"
+                app:srcCompat="@drawable/ic_camera_alt_black_24dp" />
+        </FrameLayout>
 
         <EditText
             android:id="@+id/editTextProfileManagerNickname"
@@ -211,47 +225,47 @@
             android:layout_weight="1" />
 
         <EditText
-            android:id="@+id/editTextProfileManagerPasswordOriginal"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rectangle_dark"
-            android:hint="@string/password_current"
-            android:inputType="textPassword"
-            android:paddingLeft="10dp"
-            android:textSize="18dp" />
+          android:id="@+id/editTextProfileManagerPasswordOriginal"
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:layout_gravity="center"
+          android:layout_marginLeft="32dp"
+          android:layout_marginRight="32dp"
+          android:layout_marginTop="10dp"
+          android:background="@drawable/rectangle_dark"
+          android:hint="@string/password_current"
+          android:inputType="textPassword"
+          android:paddingLeft="10dp"
+          android:textSize="18dp" />
 
         <EditText
-            android:id="@+id/editTextProfileManagerNewPasswordFirst"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rectangle_dark"
-            android:hint="@string/password_new"
-            android:inputType="textPassword"
-            android:paddingLeft="10dp"
-            android:textSize="18dp" />
+          android:id="@+id/editTextProfileManagerNewPasswordFirst"
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:layout_gravity="center"
+          android:layout_marginLeft="32dp"
+          android:layout_marginRight="32dp"
+          android:layout_marginTop="10dp"
+          android:background="@drawable/rectangle_dark"
+          android:hint="@string/password_new"
+          android:inputType="textPassword"
+          android:paddingLeft="10dp"
+          android:textSize="18dp" />
 
         <EditText
-            android:id="@+id/editTextProfileManagerNewPasswordSecond"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rectangle_dark"
-            android:hint="@string/password_new_confirm"
-            android:inputType="textPassword"
-            android:paddingLeft="10dp"
-            android:textSize="18dp" />
+          android:id="@+id/editTextProfileManagerNewPasswordSecond"
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:layout_gravity="center"
+          android:layout_marginBottom="10dp"
+          android:layout_marginLeft="32dp"
+          android:layout_marginRight="32dp"
+          android:layout_marginTop="10dp"
+          android:background="@drawable/rectangle_dark"
+          android:hint="@string/password_new_confirm"
+          android:inputType="textPassword"
+          android:paddingLeft="10dp"
+          android:textSize="18dp" />
 
         <View
             android:layout_width="match_parent"

@@ -98,7 +98,13 @@ public class ProfileFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_CODE_PROFILE_MANAGER_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
-
+                    /**
+                     * 프로필을 변경하였으므로, 데이터를 서버로부터 새로 받아와야함
+                     */
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    /**
+                     * 프로필을 변경 하지 않았음
+                     */
                 }
                 break;
         }
