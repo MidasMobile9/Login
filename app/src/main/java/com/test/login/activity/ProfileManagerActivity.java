@@ -98,7 +98,7 @@ public class ProfileManagerActivity extends AppCompatActivity {
 
     @OnClick(R.id.textViewProfilePrivateInfoPolicy)
     public void onPrivateInfoPolicyClick(){
-        String privateInfoPolicyURL = "http://blog.naver.com/tyrano_1/221164727191";
+        String privateInfoPolicyURL = "https://blog.naver.com/tyrano_1/221281685956";
 
         Intent webpageIntent = new Intent(Intent.ACTION_VIEW);
         webpageIntent.setData(Uri.parse(privateInfoPolicyURL));
