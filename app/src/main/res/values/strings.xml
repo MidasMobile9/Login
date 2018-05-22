@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Login</string>
+
+    <!-- 특수문자 -->
+    <!-- 공백 : &#160; -->
+    <!-- & : &amp; -->
+    <!-- < : &lt; -->
+    <!-- > : &gt; -->
+    <!-- ' : &apos; -->
+    <!-- " : &quot; -->
+
+    <!-- string -->
+    <string name="app_title">앱 타이틀!</string>
+    <string name="login">로그인</string>
+    <string name="join">회원 가입</string>
+    <string name="password_info">(비밀번호는 최소 8자 이상 입력해주세요)</string>
+    <string name="do_join">가입하기</string>
+    <string name="save_profile_info">프로필 저장</string>
+    <string name="default_nickname">닉네임</string>
+    <string name="default_email">이메일</string>
+    <string name="activity_profile_manager">프로필 관리</string>
+    <string name="complete">완료</string>
+    <string name="password_current">&#160;현재 비밀번호</string>
+    <string name="password_new">&#160;새 비밀번호</string>
+    <string name="password_new_confirm">&#160;새 비밀번호 확인</string>
+
+    <!-- hint string -->
+    <string name="edittext_hint_email">&#160;이메일</string>
+    <string name="edittext_hint_password">&#160;비밀번호</string>
+    <string name="edittext_hint_password_confirm">&#160;비밀번호 확인</string>
+    <string name="edittext_hint_nickname">&#160;닉네임</string>
+</resources>
