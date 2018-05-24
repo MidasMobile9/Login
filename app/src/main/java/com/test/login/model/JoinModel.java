@@ -7,10 +7,17 @@ import com.test.login.network.OkHttpAPICall;
 import com.test.login.network.OkHttpInitSingletonManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
@@ -22,17 +29,40 @@ public class JoinModel {
 
     /**
      * 가입하는 백그라운드 메소드
+     * @param email
+     * @param password
+     * @param nickname
+     * @param file
      * @return 가입하는 결과
      */
-    public static boolean getJoinResult() {
+    public static boolean getJoinResult(String email, String password, String nickname, File file) {
         String TAG = "JoinModel";
         String functionName = "getJoinResult()";
         OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
         Response response = null;
         String message = null;
         boolean result = false;
+
+        RequestBody requestBody;
+
+        if(file!=null){
+            MediaType pngType = MediaType.parse("image/png");
+            requestBody = new MultipartBody.Builder()
+                    .addFormDataPart("email", email)
+                    .addFormDataPart("password", password)
+                    .addFormDataPart("nickname", nickname)
+                    .addFormDataPart("file", file.getName(),RequestBody.create(pngType, file))
+                    .build();
+        }else{
+            requestBody = new FormBody.Builder()
+                    .add("email", email)
+                    .add("password", password)
+                    .add("nickname", nickname)
+                    .build();
+        }
+
         try {
-            response = OkHttpAPICall.GET(client, NetworkDefineConstant.join);
+            response = OkHttpAPICall.PUT(client, NetworkDefineConstant.join,requestBody);
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
