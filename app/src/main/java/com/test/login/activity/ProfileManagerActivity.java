@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.test.login.R;
 import com.test.login.util.ImageUtil;
 
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -61,7 +63,8 @@ public class ProfileManagerActivity extends AppCompatActivity {
             case REQUEST_TAKE_PROFILE_FROM_ALBUM:
                 if(resultCode == Activity.RESULT_OK){
                     Uri profileImageUri = data.getData();
-                    Bitmap resizeBitmap = ImageUtil.scaleImageDown(this, profileImageUri);
+                    Bitmap resizeBitmap = ImageUtil.scaleImageDownToBitmap(this, profileImageUri);
+                    File resizeFile = ImageUtil.scaleImageDownToFile(this, profileImageUri);
                     circleImageViewProfileManagerProfileImage.setImageBitmap(resizeBitmap);
                     /**
                      * resizeBitmap을 서버로 전송해야함
