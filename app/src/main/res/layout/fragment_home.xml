@@ -4,28 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/homeFragmentMainLayout"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="홈 프래그먼트" />
-
-        <Button
-            android:id="@+id/testRemoveButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="REMOVE" />
-
-        <Button
-            android:id="@+id/testShowButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SHOW" />
-    </LinearLayout>
+        android:text="홈 프래그먼트" />
 
 </LinearLayout>
