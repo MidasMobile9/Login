@@ -56,6 +56,10 @@ public class LoginApplication extends Application {
         user.setProfileimg(profileimg);
     }
 
+    public static void clearUser() {
+        user = null;
+    }
+
     /** Glide 사용시 OOM 처리 */
     @Override public void onLowMemory() {
         super.onLowMemory();
