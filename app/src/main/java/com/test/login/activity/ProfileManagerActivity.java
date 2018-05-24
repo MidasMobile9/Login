@@ -17,7 +17,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.test.login.R;
+import com.test.login.application.LoginApplication;
+import com.test.login.model.ProfileManagerModel;
+import com.test.login.util.Encryption;
 import com.test.login.util.ImageUtil;
+import com.test.login.util.PasswordUtil;
 
 import java.io.File;
 
@@ -27,6 +31,10 @@ import butterknife.OnClick;
 
 public class ProfileManagerActivity extends AppCompatActivity {
     public static final int REQUEST_TAKE_PROFILE_FROM_ALBUM = 302;
+    public static final String PROFILE_URL_HEADER = "http://35.187.156.145:3000/profileimg/";
+
+    private File resultImageFile;
+    private boolean isChangeProfileImage = false;
 
 
     @BindView(R.id.editTextProfileManagerPasswordOriginal)
@@ -59,73 +67,82 @@ public class ProfileManagerActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_TAKE_PROFILE_FROM_ALBUM:
-                if(resultCode == Activity.RESULT_OK){
+                if (resultCode == Activity.RESULT_OK) {
                     Uri profileImageUri = data.getData();
                     Bitmap resizeBitmap = ImageUtil.scaleImageDownToBitmap(this, profileImageUri);
-                    File resizeFile = ImageUtil.scaleImageDownToFile(this, profileImageUri);
+                    resultImageFile = ImageUtil.scaleImageDownToFile(this, profileImageUri);
+                    isChangeProfileImage = true;
                     circleImageViewProfileManagerProfileImage.setImageBitmap(resizeBitmap);
-                    /**
-                     * resizeBitmap을 서버로 전송해야함
-                     */
                 }
                 break;
         }
     }
 
     private void setProfileInit() {
-        /**
-         * 서버로부터 프로필 이미지와 닉네임을 받아서 표시하는 함수
-         */
-        //Glide.with(GlideActivity.this) // Activity 또는 Fragment의 context
-         //       .load(URL_IMAGE) // drawable에 저장된 이미지
-         //       .into(circleImageViewProfileManagerProfileImage); // 이미지를 보여줄 view
-        //editTextProfileManagerNickname.setText();
+        //서버로부터 프로필 이미지와 닉네임을 받아서 표시하는 함수
+        editTextProfileManagerNickname.setText(LoginApplication.user.getNickname());
+
+        Glide.with(getApplicationContext()) // Activity 또는 Fragment의 context
+                .load(PROFILE_URL_HEADER + LoginApplication.user.getProfileimg()) // drawable에 저장된 이미지
+                .into(circleImageViewProfileManagerProfileImage); // 이미지를 보여줄 view
     }
 
     @OnClick(R.id.textViewProfileManagerComplete)
-    public void onCompleteClick(){
+    public void onCompleteClick() {
         //완료 버튼 클릭
-        if (!checkOriginalPasswordValidate()){
-            Snackbar.make(contentsLinearLayout, "현재 비밀번호가 틀렸습니다. 확인해주세요.", Snackbar.LENGTH_LONG).show();
-            return;
-        }
-        if (!checkNewPasswordValidate()){
+
+        String originalPassword = editTextProfileManagerPasswordOriginal.getText().toString();
+
+        if (!checkNewPasswordValidate()) {
             Snackbar.make(contentsLinearLayout, "비밀번호와 비밀번호 확인이 서로 일치하지 않습니다. 확인해주세요.", Snackbar.LENGTH_LONG).show();
             return;
         }
 
-        /**
-         * 서버로 닉네임과 비밀번호, 프로필 사진 전송
-         */
+        boolean isValidNewPasword = PasswordUtil.passwordCheck(
+                getApplicationContext(),
+                editTextProfileManagerPasswordOriginal.getText().toString(),
+                editTextProfileManagerNewPasswordFirst.getText().toString(),
+                LoginApplication.user.getEmail()
+        );
+
+        boolean isInputNewPassword;
+        if (editTextProfileManagerNewPasswordFirst.getText().toString() != ""){
+            isInputNewPassword = true;
+        } else {
+            isInputNewPassword = false;
+        }
+
+
+        if (isInputNewPassword) {
+            if (isValidNewPasword) {
+                //새로운 비밀번호를 입력했고 타당한 비밀번호 일때
+                updateUserInfo();
+                if (isChangeProfileImage) {
+                    //그리고 프로필 이미지까지 바꿨을 때
+                    updateProfileImage();
+                }
+            }
+        } else {
+            if (isChangeProfileImage) {
+                //비밀번호는 입력하지 않았지만 프로필 이미지를 바꿨을 때
+                updateProfileImage();
+            }
+        }
+
 
         Intent resultIntent = getIntent();
         setResult(RESULT_OK, resultIntent);
         finish();
     }
 
-    private boolean checkOriginalPasswordValidate(){
-        //현재 비밀번호가 일치하는지 검사
-        String originalPassword = editTextProfileManagerPasswordOriginal.getText().toString();
-
-        /**
-         * 입력된 '현재 비밀번호' 와 서버로부터 받아온 비밀번호가 같은지 검사
-         */
-        //return originalPassword.equals(getPasswordFromServer());
-        return true;
-    }
-
-    private String getPasswordFromServer(){
-        return "";
-    }
-
-    private boolean checkNewPasswordValidate(){
+    private boolean checkNewPasswordValidate() {
         //새비밀번호 와 새비밀번호확인 이 같은지 검사
         String newPasswordFirst = editTextProfileManagerNewPasswordFirst.getText().toString();
         String newPasswordSecond = editTextProfileManagerNewPasswordSecond.getText().toString();
 
-        if(newPasswordFirst.equals(newPasswordSecond)){
+        if (newPasswordFirst.equals(newPasswordSecond)) {
             return true;
         }
 
@@ -133,7 +150,7 @@ public class ProfileManagerActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.textViewProfilePrivateInfoPolicy)
-    public void onPrivateInfoPolicyClick(){
+    public void onPrivateInfoPolicyClick() {
         String privateInfoPolicyURL = "https://blog.naver.com/tyrano_1/221281685956";
 
         Intent webpageIntent = new Intent(Intent.ACTION_VIEW);
@@ -142,14 +159,14 @@ public class ProfileManagerActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.imageViewProfileManagerBack)
-    public void onProfileManagerBackClick(){
+    public void onProfileManagerBackClick() {
         Intent resultIntent = getIntent();
         setResult(RESULT_CANCELED, resultIntent);
         finish();
     }
 
     @OnClick(R.id.circleImageViewProfileManagerProfileImage)
-    public void onChangeProfileImageClick(){
+    public void onChangeProfileImageClick() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
@@ -157,7 +174,7 @@ public class ProfileManagerActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.textViewProfileManagerDelete)
-    public void onProfileDeleteClick(){
+    public void onProfileDeleteClick() {
         final Intent profileDeleteIntent = new Intent(this, LoginActivity.class);
         profileDeleteIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         profileDeleteIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -171,14 +188,16 @@ public class ProfileManagerActivity extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(passwordEditText.getText().toString().equals(getPasswordFromServer())){
-                            /**
-                             * 서버에서 회원 정보 삭제
-                             */
+                        String inputPassword = passwordEditText.getText().toString();
+                        boolean isDeleted = deleteUser(inputPassword);
+
+                        if (isDeleted) {
+                            //삭제 성공
                             startActivity(profileDeleteIntent);
                             finish();
                         } else {
-                            Toast.makeText(getApplicationContext(),"비밀번호를 확인해주세요.", Toast.LENGTH_LONG).show();
+                            //삭제 실패
+                            Toast.makeText(getApplicationContext(), "비밀번호를 확인해주세요.", Toast.LENGTH_LONG).show();
                         }
                     }
                 })
@@ -190,5 +209,35 @@ public class ProfileManagerActivity extends AppCompatActivity {
                 })
                 .show();
 
+    }
+
+
+    private void updateUserInfo() {
+        ProfileManagerModel.updateUserInfo(
+                getApplicationContext(),
+                LoginApplication.user.getEmail(),
+                Encryption.getEncryptedAES(editTextProfileManagerPasswordOriginal.getText().toString()),
+                LoginApplication.user.getNickname(),
+                Encryption.getEncryptedAES(editTextProfileManagerNewPasswordFirst.getText().toString())
+                );
+
+    }
+
+    private void updateProfileImage() {
+        ProfileManagerModel.uploadProfileImage(
+                getApplicationContext(),
+                resultImageFile,
+                LoginApplication.user.getEmail(),
+                LoginApplication.user.getPassword(),
+                LoginApplication.user.getNickname()
+        );
+    }
+
+    private boolean deleteUser(String password){
+        return ProfileManagerModel.deleteUser(
+                getApplicationContext(),
+                LoginApplication.user.getEmail(),
+                password
+        );
     }
 }
