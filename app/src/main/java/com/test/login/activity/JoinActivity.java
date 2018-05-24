@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.ProxyInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,12 +22,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.test.login.R;
+import com.test.login.util.Encryption;
 import com.test.login.util.ImageUtil;
 import com.test.login.util.Permission;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +38,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.test.login.model.JoinModel.getNicknameCheckResult;
 
 public class JoinActivity extends AppCompatActivity {
 
@@ -107,11 +113,8 @@ public class JoinActivity extends AppCompatActivity {
                 if(!passwordCheck(strPassWord)){
                     return;
                 }
-                textViewDoJoin.setVisibility(View.GONE);
-                linearLayoutEmailPassword.setVisibility(View.GONE);
+                //이메일체크 TASK 실행
 
-                textViewSaveProfile.setVisibility(View.VISIBLE);
-                linearLayoutProfileInfo.setVisibility(View.VISIBLE);
                 break;
             //프로필저장
             case R.id.textViewSaveProfile:
@@ -119,8 +122,9 @@ public class JoinActivity extends AppCompatActivity {
                 if(!nicknameCheck(strNickName)){
                     return;
                 }
+
                 //여기서 서버로 전송 ㄱㄱ
-                finish();
+
                 break;
         }
     }
@@ -234,4 +238,62 @@ public class JoinActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 이메일 체크 with Server
+     */
+    public class EmailCheckTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            boolean isOk = getEmailCheckResult();
+            return isOk;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+            if (b) {
+                strPassWord = Encryption.getEncryptedAES(strPassWord);
+                textViewDoJoin.setVisibility(View.GONE);
+                linearLayoutEmailPassword.setVisibility(View.GONE);
+                textViewSaveProfile.setVisibility(View.VISIBLE);
+                linearLayoutProfileInfo.setVisibility(View.VISIBLE);
+            } else {
+                // 통신 실패
+                String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
+                Snackbar.make(linearLayoutProfileInfo,message,Snackbar.LENGTH_SHORT).show();
+            }
+        }
+    }
+    /**
+     * 닉네임 체크 with Server
+     */
+    public class NicknameCheckTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            boolean isOk = getNicknameCheckResult();
+            return isOk;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+            if (b) {
+                //가입하는 TASK 실행
+            } else {
+                // 통신 실패
+                String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
+                Snackbar.make(linearLayoutProfileInfo,message,Snackbar.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
