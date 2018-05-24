@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -244,11 +245,7 @@ public class JoinActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
             if (b) {
-                strPassWord = Encryption.getEncryptedAES(strPassWord);
-                textViewDoJoin.setVisibility(View.GONE);
-                linearLayoutEmailPassword.setVisibility(View.GONE);
-                textViewSaveProfile.setVisibility(View.VISIBLE);
-                linearLayoutProfileInfo.setVisibility(View.VISIBLE);
+                finish();
             } else {
                 // 통신 실패
                 String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
@@ -267,7 +264,7 @@ public class JoinActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            boolean isOk = getEmailCheckResult();
+            boolean isOk = getEmailCheckResult(strEmail);
             return isOk;
         }
 
@@ -298,7 +295,7 @@ public class JoinActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            boolean isOk = getNicknameCheckResult();
+            boolean isOk = getNicknameCheckResult(strNickName);
             return isOk;
         }
 

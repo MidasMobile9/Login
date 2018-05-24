@@ -1,7 +1,11 @@
 package com.test.login.model;
 
 import android.util.Log;
+import android.widget.Toast;
+
 import com.google.gson.Gson;
+import com.test.login.activity.LoginActivity;
+import com.test.login.application.LoginApplication;
 import com.test.login.network.NetworkDefineConstant;
 import com.test.login.network.OkHttpAPICall;
 import com.test.login.network.OkHttpInitSingletonManager;
@@ -48,6 +52,7 @@ public class JoinModel {
         if(file!=null){
             MediaType pngType = MediaType.parse("image/png");
             requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
                     .addFormDataPart("email", email)
                     .addFormDataPart("password", password)
                     .addFormDataPart("nickname", nickname)
@@ -62,7 +67,7 @@ public class JoinModel {
         }
 
         try {
-            response = OkHttpAPICall.PUT(client, NetworkDefineConstant.join,requestBody);
+            response = OkHttpAPICall.POST(client, NetworkDefineConstant.join,requestBody);
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
@@ -76,6 +81,7 @@ public class JoinModel {
 
                 if ( jsonFromServer.has("message") ) {
                     message = jsonFromServer.getString("message");
+
                     Log.e(TAG, message);
                 }
             }
@@ -97,8 +103,9 @@ public class JoinModel {
     /**
      * 이메일 체크하는 백그라운드 메소드
      * @return 이메일체크 결과
+     * @param strEmail 체크할 이메일
      */
-    public static boolean getEmailCheckResult() {
+    public static boolean getEmailCheckResult(String strEmail) {
         String TAG = "JoinModel";
         String functionName = "getEmailCheckResult()";
         OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
@@ -106,7 +113,7 @@ public class JoinModel {
         String message = null;
         boolean result = false;
         try {
-            response = OkHttpAPICall.GET(client, NetworkDefineConstant.checkEmail);
+            response = OkHttpAPICall.GET(client, NetworkDefineConstant.checkEmail+strEmail);
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
@@ -141,8 +148,9 @@ public class JoinModel {
     /**
      * 닉네임 체크하는 백그라운드 메소드
      * @return 닉네임체크 결과
+     * @param strNickName 체크할 닉네임
      */
-    public static boolean getNicknameCheckResult() {
+    public static boolean getNicknameCheckResult(String strNickName) {
         String TAG = "JoinModel";
         String functionName = "getNicknameCheckResult()";
         OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
@@ -150,7 +158,7 @@ public class JoinModel {
         String message = null;
         boolean result = false;
         try {
-            response = OkHttpAPICall.GET(client, NetworkDefineConstant.checkNickname);
+            response = OkHttpAPICall.GET(client, NetworkDefineConstant.checkNickname+strNickName);
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
