@@ -51,16 +51,24 @@ public class ProgressBarShow {
     }
 
     public void show(ViewGroup vg){
-        if(!isShown) {
-            isShown = true;
-            vg.addView(progressBar, 0);
+        try{
+            if(!isShown) {
+                isShown = true;
+                vg.addView(progressBar, 0);
+            }
+        } catch (IllegalStateException e){
+            e.printStackTrace();
         }
     }
 
     public void remove(ViewGroup vg){
-        if(isShown) {
-            isShown = false;
-            vg.removeView(progressBar);
+        try{
+            if(isShown) {
+                isShown = false;
+                vg.removeView(progressBar);
+            }
+        } catch (IllegalStateException e){
+            e.printStackTrace();
         }
     }
 }
