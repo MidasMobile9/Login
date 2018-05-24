@@ -8,7 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Encryption {
-    public static String encAES(String str) {
+    public static String getEncryptedAES(String str) {
         String enStr = "";
 
         try {
