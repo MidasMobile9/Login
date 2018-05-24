@@ -39,6 +39,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.test.login.model.JoinModel.getEmailCheckResult;
 import static com.test.login.model.JoinModel.getNicknameCheckResult;
 
 public class JoinActivity extends AppCompatActivity {
