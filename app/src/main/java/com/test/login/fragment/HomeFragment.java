@@ -34,10 +34,6 @@ public class HomeFragment extends Fragment {
 
     Unbinder unbinder = null;
 
-    @BindView(R.id.homeFragmentMainLayout)
-    LinearLayout homeFragmentMainLayout;
-
-
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -88,15 +84,5 @@ public class HomeFragment extends Fragment {
         this.mContext = null;
         // mActivity 해제
         this.mActivity = null;
-    }
-
-    @OnClick(R.id.testShowButton)
-    public void testShowButtonClick(){
-        ProgressBarShow.getProgressBarShowSingleton(getContext()).show(homeFragmentMainLayout);
-    }
-
-    @OnClick(R.id.testRemoveButton)
-    public void testRemoveButtonClick(){
-        ProgressBarShow.getProgressBarShowSingleton(getContext()).remove(homeFragmentMainLayout);
     }
 }
