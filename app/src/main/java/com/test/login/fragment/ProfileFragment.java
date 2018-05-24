@@ -97,6 +97,7 @@ public class ProfileFragment extends Fragment {
         super.onResume();
 
         // 유저 프로필 사진 세팅
+        LoginApplication.setUser(1, "eee@eee.com", "nana", "baseprofile.png");
         if ( user.getProfileimg() != null ) {
             Glide.with(ProfileFragment.this)
                     .load(PROFILE_BASE_URL + user.getProfileimg())

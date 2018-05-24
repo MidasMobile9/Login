@@ -2,17 +2,26 @@ package com.test.login.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.test.login.R;
+import com.test.login.data.User;
+import com.test.login.model.LoginModel;
+import com.test.login.util.Encryption;
+import com.test.login.util.ProgressBarShow;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
     private String mTAG = "LoginActivity";
     private Context mContext = LoginActivity.this;
 
+    @BindView(R.id.linearLayoutLoginActivity)
+    LinearLayout linearLayoutLoginActivity;
     @BindView(R.id.editTextEmail)
     EditText editTextEmail;
     @BindView(R.id.editTextPassword)
@@ -54,10 +65,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         if(!passwordCheck(strPassword))
             return;
-        //여기서 서버로 확인 ㄱㄱ
-        Intent intent = new Intent(mContext,MainActivity.class);
-        startActivity(intent);
-        finish();
+
+        // 로그인 어싱크 태스크
+        Log.e("@@@", Encryption.getEncryptedAES("2323"));
+        new UserLoginTask().execute(strEmail, strPassword);
     }
     /**
      * 회원가입 버튼 클릭 이벤트
@@ -77,6 +88,16 @@ public class LoginActivity extends AppCompatActivity {
             editTextEmail.requestFocus();
             return false;
         }
+
+        String emailRegExp = "[\\w\\~\\-\\.]+@[\\w\\~\\-]+(\\.[\\w\\~\\-]+)+";
+        Matcher matcher = Pattern.compile(emailRegExp).matcher(email);
+        if(!matcher.matches()){
+            //이메일 형식이 아닐 경우
+            Toast.makeText(mContext, getString(R.string.email_combination), Toast.LENGTH_SHORT).show();
+            editTextEmail.requestFocus();
+            return false;
+        }
+
         return true;
     }
     /**
@@ -91,4 +112,54 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    // AsyncTask ====================================================================================
+    public class UserLoginTask extends AsyncTask<String, Void, Map<String, Object>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBarShow.getProgressBarShowSingleton(LoginActivity.this).show(linearLayoutLoginActivity);
+        }
+
+        @Override
+        protected Map<String, Object> doInBackground(String... params) {
+            String strEmail = params[0];
+            String strPassword = Encryption.getEncryptedAES(params[1]);
+
+            Map<String, Object> map = LoginModel.loginUser(strEmail, strPassword);
+
+            return map;
+        }
+
+        @Override
+        protected void onPostExecute(Map<String, Object> map) {
+            super.onPostExecute(map);
+            ProgressBarShow.getProgressBarShowSingleton(LoginActivity.this).remove(linearLayoutLoginActivity);
+
+            if ( map == null ) {
+                // 통신실패
+                String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
+                Snackbar.make(linearLayoutLoginActivity, message, Snackbar.LENGTH_SHORT).show();
+            } else {
+                // 통신성공
+
+                boolean result = (boolean)map.get("result");
+                String message = (String)map.get("message");
+                User user = (User)map.get("data");
+
+                if ( result ) {
+                    // 로그인 성공
+                    Intent intent = new Intent(mContext,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    // 로그인 실패
+                    Snackbar.make(linearLayoutLoginActivity, message, Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+    // ==============================================================================================
+
+
 }
