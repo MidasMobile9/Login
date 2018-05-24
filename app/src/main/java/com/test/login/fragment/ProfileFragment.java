@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
     public static final int REQUEST_CODE_PROFILE_MANAGER_ACTIVITY = 301;
@@ -36,6 +37,12 @@ public class ProfileFragment extends Fragment {
     private MainActivity mActivity = null;
 
     Unbinder unbinder = null;
+
+    @BindView(R.id.circleImageViewProfileFragmentProfileImage) CircleImageView circleImageViewProfileFragmentProfileImage;
+    @BindView(R.id.textViewProfileFragmentProfileNickname) TextView textViewProfileFragmentProfileNickname;
+    @BindView(R.id.textViewProfileFragmentProfileEmail) TextView textViewProfileFragmentProfileEmail;
+    @BindView(R.id.textViewProfileFragmentModifyProfile) TextView textViewProfileFragmentModifyProfile;
+    @BindView(R.id.textViewProfileFragmentLogout) TextView textViewProfileFragmentLogout;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -74,6 +81,11 @@ public class ProfileFragment extends Fragment {
         // 버터나이프
         unbinder = ButterKnife.bind(this, rootView);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
