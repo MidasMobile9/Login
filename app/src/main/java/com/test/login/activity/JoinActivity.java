@@ -3,44 +3,32 @@ package com.test.login.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.ProxyInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.test.login.R;
 import com.test.login.util.Encryption;
-import com.test.login.util.ImageUtil;
 import com.test.login.util.Permission;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.test.login.model.JoinModel.getEmailCheckResult;
-import static com.test.login.model.JoinModel.getNicknameCheckResult;
+import static com.test.login.model.JoinModel.*;
+import static com.test.login.util.ImageUtil.scaleImageDownToFile;
 
 public class JoinActivity extends AppCompatActivity {
 
@@ -115,7 +103,7 @@ public class JoinActivity extends AppCompatActivity {
                     return;
                 }
                 //이메일체크 TASK 실행
-
+                new EmailCheckTask().execute();
                 break;
             //프로필저장
             case R.id.textViewSaveProfile:
@@ -123,9 +111,7 @@ public class JoinActivity extends AppCompatActivity {
                 if(!nicknameCheck(strNickName)){
                     return;
                 }
-
-                //여기서 서버로 전송 ㄱㄱ
-
+                new NicknameCheckTask().execute();
                 break;
         }
     }
@@ -148,7 +134,6 @@ public class JoinActivity extends AppCompatActivity {
             editTextInputEmail.requestFocus();
             return false;
         }
-        //서버 중복확인 필요
         return true;
     }
     /**
@@ -203,7 +188,6 @@ public class JoinActivity extends AppCompatActivity {
             editTextNickname.requestFocus();
             return false;
         }
-        //서버 중복확인 필요
         return true;
     }
     /**
@@ -240,6 +224,36 @@ public class JoinActivity extends AppCompatActivity {
     }
 
     /**
+     * 가입하기 with Server
+     */
+    public class JoinTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            File file = null;
+            if(mImageCaptureUri!=null)
+                file = scaleImageDownToFile(mContext,mImageCaptureUri);
+            boolean isOk = getJoinResult(strEmail,strPassWord,strNickName,file);
+            return isOk;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
+            if (b) {
+                finish();
+            } else {
+                // 통신 실패
+                String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
+                Snackbar.make(linearLayoutProfileInfo,message,Snackbar.LENGTH_SHORT).show();
+            }
+        }
+    }
+    /**
      * 이메일 체크 with Server
      */
     public class EmailCheckTask extends AsyncTask<Void, Void, Boolean> {
@@ -250,7 +264,7 @@ public class JoinActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            boolean isOk = getEmailCheckResult();
+            boolean isOk = getEmailCheckResult(strEmail);
             return isOk;
         }
 
@@ -281,7 +295,7 @@ public class JoinActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            boolean isOk = getNicknameCheckResult();
+            boolean isOk = getNicknameCheckResult(strNickName);
             return isOk;
         }
 
@@ -289,7 +303,7 @@ public class JoinActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
             if (b) {
-                //가입하는 TASK 실행
+                new JoinTask().execute();
             } else {
                 // 통신 실패
                 String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
