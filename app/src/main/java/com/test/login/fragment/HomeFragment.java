@@ -4,6 +4,7 @@ package com.test.login.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import safety.com.br.android_shake_detector.core.ShakeCallback;
+import safety.com.br.android_shake_detector.core.ShakeDetector;
+import safety.com.br.android_shake_detector.core.ShakeOptions;
 
 public class HomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -32,6 +36,7 @@ public class HomeFragment extends Fragment {
 
     @BindView(R.id.homeFragmentMainLayout)
     LinearLayout homeFragmentMainLayout;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -69,6 +74,7 @@ public class HomeFragment extends Fragment {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_home, container, false);
         // 버터나이프
         unbinder = ButterKnife.bind(this, rootView);
+
         return rootView;
     }
 
