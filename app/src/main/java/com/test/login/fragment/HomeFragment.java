@@ -7,11 +7,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.test.login.R;
 import com.test.login.activity.MainActivity;
+import com.test.login.util.ProgressBarShow;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class HomeFragment extends Fragment {
@@ -25,6 +29,9 @@ public class HomeFragment extends Fragment {
     private MainActivity mActivity = null;
 
     Unbinder unbinder = null;
+
+    @BindView(R.id.homeFragmentMainLayout)
+    LinearLayout homeFragmentMainLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -75,5 +82,15 @@ public class HomeFragment extends Fragment {
         this.mContext = null;
         // mActivity 해제
         this.mActivity = null;
+    }
+
+    @OnClick(R.id.testShowButton)
+    public void testShowButtonClick(){
+        ProgressBarShow.getProgressBarShowSingleton(getContext()).show(homeFragmentMainLayout);
+    }
+
+    @OnClick(R.id.testRemoveButton)
+    public void testRemoveButtonClick(){
+        ProgressBarShow.getProgressBarShowSingleton(getContext()).remove(homeFragmentMainLayout);
     }
 }

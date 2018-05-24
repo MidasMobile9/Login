@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <!-- AppBar 레이아웃 -->
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -83,6 +84,7 @@
         app:layout_anchorGravity="end" />
 
     <!-- Bottom Navigation 뷰 -->
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
