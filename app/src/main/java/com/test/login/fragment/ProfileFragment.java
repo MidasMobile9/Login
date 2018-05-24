@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.test.login.R;
 import com.test.login.activity.LoginActivity;
 import com.test.login.activity.MainActivity;
 import com.test.login.activity.ProfileManagerActivity;
+import com.test.login.application.LoginApplication;
 import com.test.login.data.User;
 
 import butterknife.BindView;
@@ -34,6 +36,8 @@ public class ProfileFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private final String PROFILE_BASE_URL = "http://35.187.156.145:3000/profileimg/";
 
     private String mParam1;
     private String mParam2;
@@ -95,7 +99,7 @@ public class ProfileFragment extends Fragment {
         // 유저 프로필 사진 세팅
         if ( user.getProfileimg() != null ) {
             Glide.with(ProfileFragment.this)
-                    .load(user.getProfileimg())
+                    .load(PROFILE_BASE_URL + user.getProfileimg())
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(circleImageViewProfileFragmentProfileImage);
@@ -128,9 +132,9 @@ public class ProfileFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_CODE_PROFILE_MANAGER_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
-                    /**
-                     * 프로필을 변경하였으므로, 데이터를 서버로부터 새로 받아와야함
-                     */
+                    // 프래그먼트 새로고침
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.detach(ProfileFragment.this).attach(ProfileFragment.this).commit();
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     /**
                      * 프로필을 변경 하지 않았음
@@ -148,8 +152,10 @@ public class ProfileFragment extends Fragment {
 
     @OnClick(R.id.textViewProfileFragmentLogout)
     public void onProfileLogoutClick(){
-        final Intent profileDeleteIntent = new Intent(mContext, LoginActivity.class);
-        startActivity(profileDeleteIntent);
+        LoginApplication.clearUser();
+
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        startActivity(intent);
         mActivity.finish();
     }
 }
