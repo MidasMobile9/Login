@@ -5,10 +5,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
+import com.test.login.data.User;
 
 public class LoginApplication extends Application {
     private static Context mContext;
     private static String mCookie = "";
+
+    public static User user = null;
 
     @Override
     public void onCreate() {
@@ -40,6 +43,17 @@ public class LoginApplication extends Application {
 
     public static void clearCookie() {
         mCookie = "";
+    }
+
+    public static void setUser(int no, String email, String nickname, String profileimg) {
+        if ( user == null ) {
+            user = new User();
+        }
+
+        user.setNo(no);
+        user.setEmail(email);
+        user.setNickname(nickname);
+        user.setProfileimg(profileimg);
     }
 
     /** Glide 사용시 OOM 처리 */
