@@ -11,15 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.test.login.R;
 import com.test.login.activity.LoginActivity;
 import com.test.login.activity.MainActivity;
 import com.test.login.activity.ProfileManagerActivity;
+import com.test.login.data.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.test.login.application.LoginApplication.user;
 
 public class ProfileFragment extends Fragment {
     public static final int REQUEST_CODE_PROFILE_MANAGER_ACTIVITY = 301;
@@ -36,6 +42,12 @@ public class ProfileFragment extends Fragment {
     private MainActivity mActivity = null;
 
     Unbinder unbinder = null;
+
+    @BindView(R.id.circleImageViewProfileFragmentProfileImage) CircleImageView circleImageViewProfileFragmentProfileImage;
+    @BindView(R.id.textViewProfileFragmentProfileNickname) TextView textViewProfileFragmentProfileNickname;
+    @BindView(R.id.textViewProfileFragmentProfileEmail) TextView textViewProfileFragmentProfileEmail;
+    @BindView(R.id.textViewProfileFragmentModifyProfile) TextView textViewProfileFragmentModifyProfile;
+    @BindView(R.id.textViewProfileFragmentLogout) TextView textViewProfileFragmentLogout;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -74,6 +86,29 @@ public class ProfileFragment extends Fragment {
         // 버터나이프
         unbinder = ButterKnife.bind(this, rootView);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // 유저 프로필 사진 세팅
+        if ( user.getProfileimg() != null ) {
+            Glide.with(ProfileFragment.this)
+                    .load(user.getProfileimg())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(circleImageViewProfileFragmentProfileImage);
+
+        } else {
+            Glide.with(ProfileFragment.this)
+                    .load(R.drawable.ic_profile_black_48dp)
+                    .into(circleImageViewProfileFragmentProfileImage);
+        }
+        // 유저 닉네임 세팅
+        textViewProfileFragmentProfileNickname.setText(user.getNickname());
+        // 유저 이메일 세팅
+        textViewProfileFragmentProfileEmail.setText(user.getEmail());
     }
 
     @Override
