@@ -1,9 +1,10 @@
 package com.test.login.util;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
+import android.text.Layout;
+import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 /**
@@ -21,21 +22,25 @@ import android.widget.ProgressBar;
 public class ProgressBarShow {
     private static ProgressBarShow progressBarShow;
     private static ProgressBar progressBar;
+    private boolean isShown;
     private Context context;
 
     private ProgressBarShow(Context context){
         this.context = context;
         progressBar = new ProgressBar(context, null);
         createProgressBar();
+        isShown = false;
     }
 
     private void createProgressBar(){
-        ViewGroup.LayoutParams edittext_layout_params =
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams progressBarLayoutParam =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        progressBar.setLayoutParams(edittext_layout_params);
+        progressBarLayoutParam.gravity = Gravity.CENTER;
+
+        progressBar.setLayoutParams(progressBarLayoutParam);
     }
 
     public static ProgressBarShow getProgressBarShowSingleton(Context context){
@@ -46,10 +51,16 @@ public class ProgressBarShow {
     }
 
     public void show(ViewGroup vg){
-        vg.addView(progressBar);
+        if(!isShown) {
+            isShown = true;
+            vg.addView(progressBar, 0);
+        }
     }
 
     public void remove(ViewGroup vg){
-        vg.removeView(progressBar);
+        if(isShown) {
+            isShown = false;
+            vg.removeView(progressBar);
+        }
     }
 }
