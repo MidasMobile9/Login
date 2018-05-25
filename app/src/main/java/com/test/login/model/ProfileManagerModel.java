@@ -4,9 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.test.login.activity.MainActivity;
-import com.test.login.application.LoginApplication;
-import com.test.login.network.NetworkDefineConstant;
 import com.test.login.network.NetworkDefineOSH;
 import com.test.login.network.OkHttpAPICall;
 import com.test.login.network.OkHttpInitSingletonManager;
@@ -88,60 +85,6 @@ public class ProfileManagerModel {
         }
 
         return isUpdated;
-    }
-
-    public static boolean uploadProfileImage(Context mContext, File imageFile, String email, String password, String nickname) {
-        OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
-        Response response = null;
-
-        boolean isUpdate = false;
-        String message = "";
-
-        //사진을 담은 RequestBody 생성
-        MediaType pngType = MediaType.parse("image/png");
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("email", email)
-                .addFormDataPart("password", password)
-                .addFormDataPart("nickname", nickname)
-                .addFormDataPart("file", imageFile.getName(), RequestBody.create(pngType, imageFile))
-                .build();
-
-        try {
-            response = OkHttpAPICall.POST(client, NetworkDefineOSH.SERVER_URL_UPDATE, requestBody);
-
-            if ( response == null ) {
-                Log.e(TAG, "Response of uploadSteadyProjectImage() is null.");
-
-                return false;
-            } else {
-                JSONObject jsonFromServer = new JSONObject(response.body().string());
-
-
-
-                if (jsonFromServer.has("result")) {
-                    isUpdate = jsonFromServer.getBoolean("result");
-                }
-
-                if (jsonFromServer.has("message")) {
-                    message = jsonFromServer.getString("message");
-                    Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-                }
-            }
-
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if ( response != null ) {
-                response.close();
-            }
-        }
-
-        return isUpdate;
     }
 
     public static boolean deleteUser(String email, String password){

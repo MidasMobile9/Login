@@ -4,6 +4,7 @@ package com.test.login.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -19,6 +21,7 @@ import com.test.login.activity.LoginActivity;
 import com.test.login.activity.MainActivity;
 import com.test.login.activity.ProfileManagerActivity;
 import com.test.login.application.LoginApplication;
+import com.test.login.model.ProfileModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -151,11 +154,39 @@ public class ProfileFragment extends Fragment {
 
     @OnClick(R.id.textViewProfileFragmentLogout)
     public void onProfileLogoutClick(){
-        LoginApplication.clearCookie();
-        LoginApplication.clearUser();
+        // 로그아웃
+        new UserLogoutTask().execute();
+    }
 
-        Intent intent = new Intent(mContext, LoginActivity.class);
-        startActivity(intent);
-        mActivity.finish();
+    public class UserLogoutTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            boolean isLogouted = ProfileModel.logoutUser();
+
+            return isLogouted;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isLogouted) {
+            super.onPostExecute(isLogouted);
+
+            if ( isLogouted ) {
+                // 로그아웃 성공
+                LoginApplication.clearCookie();
+                LoginApplication.clearUser();
+
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
+                mActivity.finish();
+            } else {
+                // 로그아웃 실패
+                Toast.makeText(mActivity, "로그아웃에 실패하였습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
