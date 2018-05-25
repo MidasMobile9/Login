@@ -151,6 +151,7 @@ public class ProfileFragment extends Fragment {
 
     @OnClick(R.id.textViewProfileFragmentLogout)
     public void onProfileLogoutClick(){
+        LoginApplication.clearCookie();
         LoginApplication.clearUser();
 
         Intent intent = new Intent(mContext, LoginActivity.class);
