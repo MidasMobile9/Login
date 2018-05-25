@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -39,14 +41,14 @@ public class JoinModel {
      * @param file
      * @return 가입하는 결과
      */
-    public static boolean getJoinResult(String email, String password, String nickname, File file) {
+    public static Map<String, Object> getJoinResult(String email, String password, String nickname, File file) {
         String TAG = "JoinModel";
         String functionName = "getJoinResult()";
         OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
         Response response = null;
         String message = null;
         boolean result = false;
-
+        Map<String, Object> map = null;
         RequestBody requestBody;
 
         if(file!=null){
@@ -71,18 +73,19 @@ public class JoinModel {
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
-                return result;
+                return map;
             } else {
                 JSONObject jsonFromServer = new JSONObject(response.body().string());
 
+                // 통신결과 체크
                 if ( jsonFromServer.has("result") ) {
-                    result = jsonFromServer.getBoolean("result");
+                    map = new HashMap<String, Object>();
+                    map.put("result", jsonFromServer.getBoolean("result"));
                 }
 
+                // 결과 메시지
                 if ( jsonFromServer.has("message") ) {
-                    message = jsonFromServer.getString("message");
-
-                    Log.e(TAG, message);
+                    map.put("message", jsonFromServer.getString("message"));
                 }
             }
         } catch (UnknownHostException e) {
@@ -96,7 +99,7 @@ public class JoinModel {
                 response.close();
             }
         }
-        return result;
+        return map;
     }
 
 
@@ -105,29 +108,32 @@ public class JoinModel {
      * @return 이메일체크 결과
      * @param strEmail 체크할 이메일
      */
-    public static boolean getEmailCheckResult(String strEmail) {
+    public static Map<String, Object> getEmailCheckResult(String strEmail) {
         String TAG = "JoinModel";
         String functionName = "getEmailCheckResult()";
         OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
         Response response = null;
         String message = null;
         boolean result = false;
+        Map<String, Object> map = null;
         try {
             response = OkHttpAPICall.GET(client, NetworkDefineConstant.checkEmail+strEmail);
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
-                return result;
+                return map;
             } else {
                 JSONObject jsonFromServer = new JSONObject(response.body().string());
 
+                // 통신결과 체크
                 if ( jsonFromServer.has("result") ) {
-                    result = jsonFromServer.getBoolean("result");
+                    map = new HashMap<String, Object>();
+                    map.put("result", jsonFromServer.getBoolean("result"));
                 }
 
+                // 결과 메시지
                 if ( jsonFromServer.has("message") ) {
-                    message = jsonFromServer.getString("message");
-                    Log.e(TAG, message);
+                    map.put("message", jsonFromServer.getString("message"));
                 }
             }
         } catch (UnknownHostException e) {
@@ -141,7 +147,7 @@ public class JoinModel {
                 response.close();
             }
         }
-        return result;
+        return map;
     }
 
 
@@ -150,29 +156,32 @@ public class JoinModel {
      * @return 닉네임체크 결과
      * @param strNickName 체크할 닉네임
      */
-    public static boolean getNicknameCheckResult(String strNickName) {
+    public static Map<String, Object> getNicknameCheckResult(String strNickName) {
         String TAG = "JoinModel";
         String functionName = "getNicknameCheckResult()";
         OkHttpClient client = OkHttpInitSingletonManager.getOkHttpClient();
         Response response = null;
         String message = null;
         boolean result = false;
+        Map<String, Object> map = null;
         try {
             response = OkHttpAPICall.GET(client, NetworkDefineConstant.checkNickname+strNickName);
 
             if ( response == null ) {
                 Log.e(TAG, "Response of "+functionName+" is null.");
-                return result;
+                return map;
             } else {
                 JSONObject jsonFromServer = new JSONObject(response.body().string());
 
+                // 통신결과 체크
                 if ( jsonFromServer.has("result") ) {
-                    result = jsonFromServer.getBoolean("result");
+                    map = new HashMap<String, Object>();
+                    map.put("result", jsonFromServer.getBoolean("result"));
                 }
 
+                // 결과 메시지
                 if ( jsonFromServer.has("message") ) {
-                    message = jsonFromServer.getString("message");
-                    Log.e(TAG, message);
+                    map.put("message", jsonFromServer.getString("message"));
                 }
             }
         } catch (UnknownHostException e) {
@@ -186,7 +195,7 @@ public class JoinModel {
                 response.close();
             }
         }
-        return result;
+        return map;
     }
 
 }
