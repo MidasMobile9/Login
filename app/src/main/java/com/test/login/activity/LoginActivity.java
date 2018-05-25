@@ -142,13 +142,30 @@ public class LoginActivity extends AppCompatActivity {
                 Snackbar.make(linearLayoutLoginActivity, message, Snackbar.LENGTH_SHORT).show();
             } else {
                 // 통신성공
+                boolean result = false;
+                String message = null;
+                String cookie = null;
+                User user = null;
 
-                boolean result = (boolean)map.get("result");
-                String message = (String)map.get("message");
-                User user = (User)map.get("data");
+                if ( map.containsKey("result") ) {
+                    result = (boolean)map.get("result");
+                }
+
+                if ( map.containsKey("message") ) {
+                    message = (String)map.get("message");
+                }
+
+                if ( map.containsKey("cookie") ) {
+                    cookie = (String)map.get("cookie");
+                }
+
+                if ( map.containsKey("data") ) {
+                    user = (User)map.get("data");
+                }
 
                 if ( result ) {
                     // 로그인 성공
+                    LoginApplication.setCookie(cookie);
                     LoginApplication.setUser(user.getNo(), user.getEmail(), user.getNickname(), user.getProfileimg());
 
                     Intent intent = new Intent(mContext,MainActivity.class);
@@ -162,6 +179,4 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     // ==============================================================================================
-
-
 }

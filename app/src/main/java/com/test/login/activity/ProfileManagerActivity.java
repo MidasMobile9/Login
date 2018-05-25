@@ -111,25 +111,29 @@ public class ProfileManagerActivity extends AppCompatActivity {
         String newPasswordFirst = editTextProfileManagerNewPasswordFirst.getText().toString().trim();
         String newPasswordSecond = editTextProfileManagerNewPasswordSecond.getText().toString().trim();
 
+        if ( newPasswordFirst.length() < 1 ) {
+            newPasswordFirst = null;
+        }
+
         // 오리지날 비밀번호 형식 체크
         if ( !PasswordUtil.checkPassword(getApplicationContext(), originalPassword, LoginApplication.user.getEmail()) ) {
             return;
         }
 
         // 새 비밀번호 형식 체크
-        if ( newPasswordFirst.length() > 0 && !PasswordUtil.checkPassword(getApplicationContext(), newPasswordFirst, LoginApplication.user.getEmail()) ) {
+        if ( newPasswordFirst != null && !PasswordUtil.checkPassword(getApplicationContext(), newPasswordFirst, LoginApplication.user.getEmail()) ) {
             return;
         }
 
         // 새 비밀번호, 새 비밀번호 확인 일치 체크
-        if ( !newPasswordFirst.equals(newPasswordSecond) ) {
+        if ( newPasswordFirst != null && !newPasswordFirst.equals(newPasswordSecond) ) {
             Snackbar.make(contentsLinearLayout, R.string.new_password_not_matched, Snackbar.LENGTH_LONG).show();
             return;
         }
 
         new UserUpdateTask().execute(LoginApplication.user.getEmail(),
                 Encryption.getMD5(originalPassword),
-                LoginApplication.user.getNickname(),
+                editTextProfileManagerNickname.getText().toString().trim(),
                 Encryption.getMD5(newPasswordFirst),
                 isChangeProfileImage,
                 resultImageFile);

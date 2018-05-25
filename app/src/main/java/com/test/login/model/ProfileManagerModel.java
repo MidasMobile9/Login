@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.test.login.activity.MainActivity;
+import com.test.login.application.LoginApplication;
 import com.test.login.network.NetworkDefineConstant;
 import com.test.login.network.NetworkDefineOSH;
 import com.test.login.network.OkHttpAPICall;

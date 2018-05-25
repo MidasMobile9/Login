@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
 
+        LoginApplication.clearCookie();
         LoginApplication.clearUser();
     }
 

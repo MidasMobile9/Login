@@ -3,6 +3,7 @@ package com.test.login.model;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.test.login.application.LoginApplication;
 import com.test.login.data.User;
 import com.test.login.network.NetworkDefineCYJ;
 import com.test.login.network.OkHttpAPICall;
@@ -64,6 +65,10 @@ public class LoginModel {
 
                     map.put("data", user);
                 }
+
+                // 쿠키
+                String cookie = response.header("set-cookie");
+                map.put("cookie", cookie);
             }
         } catch (UnknownHostException e) {
             e.printStackTrace();
