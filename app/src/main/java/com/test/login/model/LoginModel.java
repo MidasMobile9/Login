@@ -30,7 +30,7 @@ public class LoginModel {
         Response response = null;
         Gson gson = new Gson();
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = null;
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("email", email)
@@ -45,6 +45,8 @@ public class LoginModel {
 
                 return null;
             } else {
+                map = new HashMap<String, Object>();
+
                 JSONObject jsonFromServer = new JSONObject(response.body().string());
 
                 // 통신결과 체크
