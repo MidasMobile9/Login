@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.test.login.R;
 import com.test.login.application.LoginApplication;
 import com.test.login.model.ProfileManagerModel;
@@ -99,6 +100,8 @@ public class ProfileManagerActivity extends AppCompatActivity {
 
         Glide.with(getApplicationContext()) // Activity 또는 Fragment의 context
                 .load(PROFILE_URL_HEADER + LoginApplication.user.getProfileimg()) // drawable에 저장된 이미지
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(circleImageViewProfileManagerProfileImage); // 이미지를 보여줄 view
 
         textViewProfileManagerEmail.setText(LoginApplication.user.getEmail());
@@ -208,6 +211,15 @@ public class ProfileManagerActivity extends AppCompatActivity {
             File imageFile = (File)params[5];
 
             boolean isUpdated = ProfileManagerModel.updateUserInfo(email, password, nickname, newpassword, isChangeProfileImage, imageFile);
+
+            // 유저 정보 업데이트
+            if ( isUpdated ) {
+                LoginApplication.user.setNickname(nickname);
+
+                if ( isChangeProfileImage ) {
+                    LoginApplication.user.setProfileimg(email + ".png");
+                }
+            }
 
             return isUpdated;
         }
