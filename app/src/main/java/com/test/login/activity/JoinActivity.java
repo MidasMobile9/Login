@@ -272,7 +272,7 @@ public class JoinActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
             if (b) {
-                strPassWord = Encryption.getEncryptedAES(strPassWord);
+                strPassWord = Encryption.getMD5(strPassWord);
                 textViewDoJoin.setVisibility(View.GONE);
                 linearLayoutEmailPassword.setVisibility(View.GONE);
                 textViewSaveProfile.setVisibility(View.VISIBLE);

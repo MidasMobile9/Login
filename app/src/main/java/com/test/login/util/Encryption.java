@@ -3,46 +3,28 @@ package com.test.login.util;
 import android.util.Base64;
 
 import java.security.Key;
+import java.security.MessageDigest;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Encryption {
-    public static String getEncryptedAES(String str) {
-        String enStr = "";
+    public static String getMD5(String str) {
+        StringBuffer sb = new StringBuffer();
 
         try {
-            Key keySpec = getAESKey();
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            c.init(Cipher.ENCRYPT_MODE, keySpec);
-            byte[] encrypted = c.doFinal(str.getBytes("UTF-8"));
-            enStr = new String(Base64.encode(encrypted, Base64.NO_WRAP));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(str.getBytes());
 
-        return enStr;
-    }
+            byte byteData[] = md.digest();
 
-    private static Key getAESKey() {
-        Key keySpec = null;
-
-        try {
-            String key = "MIDASMOBILE9";
-            byte[] keyBytes = new byte[16];
-            byte[] b = key.getBytes("UTF-8");
-
-            int len = b.length;
-            if (len > keyBytes.length) {
-                len = keyBytes.length;
+            for ( int i = 0; i < byteData.length; i++ )  {
+                sb.append(Integer.toHexString((int)byteData[i] & 0x00ff));
             }
-
-            System.arraycopy(b, 0, keyBytes, 0, len);
-            keySpec = new SecretKeySpec(keyBytes, "AES");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return keySpec;
+        return sb.toString();
     }
 }

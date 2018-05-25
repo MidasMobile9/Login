@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.test.login.R;
+import com.test.login.application.LoginApplication;
 import com.test.login.fragment.ContentFragment;
 import com.test.login.fragment.HomeFragment;
 import com.test.login.fragment.ProfileFragment;
@@ -35,9 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
         // BottomNavigationView 세팅
         setBottomNavigationView();
+    }
 
-        Log.d("오승훈", "temp");
-        Log.d("최영진", "temp");
+    @Override
+    public void finish() {
+        super.finish();
+
+        LoginApplication.clearUser();
     }
 
     public void setBottomNavigationView() {

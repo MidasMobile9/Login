@@ -44,6 +44,7 @@
     <string name="password_contain_id">비밀번호는 이메일을 포함 할 수 없습니다.</string>
     <string name="password_blank">비밀번호는 공백을 포함할 수 없습니다.</string>
     <string name="password_not_matched">비밀번호를 다시 확인해 주세요.</string>
+    <string name="new_password_not_matched">새 비밀번호가 서로 일치하지 않습니다. 확인해주세요.</string>
 
     <string name="nickname_length_zero">닉네임을 입력해 주세요.</string>
 </resources>

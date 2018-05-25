@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.test.login.R;
+import com.test.login.application.LoginApplication;
 import com.test.login.data.User;
 import com.test.login.model.LoginModel;
 import com.test.login.util.Encryption;
@@ -59,15 +60,14 @@ public class LoginActivity extends AppCompatActivity {
      * */
     @OnClick({R.id.buttonLogin})
     public void onClickLoginButtonLogin(View view){
-        String strEmail = editTextEmail.getText().toString();
-        String strPassword = editTextPassword.getText().toString();
+        String strEmail = editTextEmail.getText().toString().trim();
+        String strPassword = Encryption.getMD5(editTextPassword.getText().toString().trim());
         if(!emailCheck(strEmail))
             return;
         if(!passwordCheck(strPassword))
             return;
 
         // 로그인 어싱크 태스크
-        Log.e("@@@", Encryption.getEncryptedAES("2323"));
         new UserLoginTask().execute(strEmail, strPassword);
     }
     /**
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Map<String, Object> doInBackground(String... params) {
             String strEmail = params[0];
-            String strPassword = Encryption.getEncryptedAES(params[1]);
+            String strPassword = params[1];
 
             Map<String, Object> map = LoginModel.loginUser(strEmail, strPassword);
 
@@ -149,6 +149,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 if ( result ) {
                     // 로그인 성공
+                    LoginApplication.setUser(user.getNo(), user.getEmail(), user.getNickname(), user.getProfileimg());
+
                     Intent intent = new Intent(mContext,MainActivity.class);
                     startActivity(intent);
                     finish();

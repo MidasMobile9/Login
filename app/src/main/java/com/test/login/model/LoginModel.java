@@ -60,6 +60,7 @@ public class LoginModel {
                 if ( jsonFromServer.has("data") ) {
                     JSONObject jsonObjectUser = jsonFromServer.getJSONObject("data");
                     User user = gson.fromJson(jsonObjectUser.toString(), User.class);
+                    user.setEmail(email);
 
                     map.put("data", user);
                 }

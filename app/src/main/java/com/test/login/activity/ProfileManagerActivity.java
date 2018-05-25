@@ -5,14 +5,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +28,7 @@ import com.test.login.model.ProfileManagerModel;
 import com.test.login.util.Encryption;
 import com.test.login.util.ImageUtil;
 import com.test.login.util.PasswordUtil;
+import com.test.login.util.ProgressBarShow;
 
 import java.io.File;
 
@@ -33,10 +40,14 @@ public class ProfileManagerActivity extends AppCompatActivity {
     public static final int REQUEST_TAKE_PROFILE_FROM_ALBUM = 302;
     public static final String PROFILE_URL_HEADER = "http://35.187.156.145:3000/profileimg/";
 
+    private final String PRIVACY_POLICY_INFO = "https://blog.naver.com/tyrano_1/221283509070";
+
     private File resultImageFile;
     private boolean isChangeProfileImage = false;
 
 
+    @BindView(R.id.coordinatorLayout)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.editTextProfileManagerPasswordOriginal)
     EditText editTextProfileManagerPasswordOriginal;
     @BindView(R.id.editTextProfileManagerNewPasswordFirst)
@@ -53,6 +64,8 @@ public class ProfileManagerActivity extends AppCompatActivity {
     ImageView circleImageViewProfileManagerProfileImage;
     @BindView(R.id.editTextProfileManagerNickname)
     EditText editTextProfileManagerNickname;
+    @BindView(R.id.textViewProfileManagerEmail)
+    TextView textViewProfileManagerEmail;
 
 
     @Override
@@ -87,71 +100,44 @@ public class ProfileManagerActivity extends AppCompatActivity {
         Glide.with(getApplicationContext()) // Activity 또는 Fragment의 context
                 .load(PROFILE_URL_HEADER + LoginApplication.user.getProfileimg()) // drawable에 저장된 이미지
                 .into(circleImageViewProfileManagerProfileImage); // 이미지를 보여줄 view
+
+        textViewProfileManagerEmail.setText(LoginApplication.user.getEmail());
     }
 
     @OnClick(R.id.textViewProfileManagerComplete)
     public void onCompleteClick() {
         //완료 버튼 클릭
+        String originalPassword = editTextProfileManagerPasswordOriginal.getText().toString().trim();
+        String newPasswordFirst = editTextProfileManagerNewPasswordFirst.getText().toString().trim();
+        String newPasswordSecond = editTextProfileManagerNewPasswordSecond.getText().toString().trim();
 
-        String originalPassword = editTextProfileManagerPasswordOriginal.getText().toString();
-
-        if (!checkNewPasswordValidate()) {
-            Snackbar.make(contentsLinearLayout, "비밀번호와 비밀번호 확인이 서로 일치하지 않습니다. 확인해주세요.", Snackbar.LENGTH_LONG).show();
+        // 오리지날 비밀번호 형식 체크
+        if ( !PasswordUtil.checkPassword(getApplicationContext(), originalPassword, LoginApplication.user.getEmail()) ) {
             return;
         }
 
-        boolean isValidNewPasword = PasswordUtil.passwordCheck(
-                getApplicationContext(),
-                editTextProfileManagerPasswordOriginal.getText().toString(),
-                editTextProfileManagerNewPasswordFirst.getText().toString(),
-                LoginApplication.user.getEmail()
-        );
-
-        boolean isInputNewPassword;
-        if (editTextProfileManagerNewPasswordFirst.getText().toString() != ""){
-            isInputNewPassword = true;
-        } else {
-            isInputNewPassword = false;
+        // 새 비밀번호 형식 체크
+        if ( newPasswordFirst.length() > 0 && !PasswordUtil.checkPassword(getApplicationContext(), newPasswordFirst, LoginApplication.user.getEmail()) ) {
+            return;
         }
 
-
-        if (isInputNewPassword) {
-            if (isValidNewPasword) {
-                //새로운 비밀번호를 입력했고 타당한 비밀번호 일때
-                updateUserInfo();
-                if (isChangeProfileImage) {
-                    //그리고 프로필 이미지까지 바꿨을 때
-                    updateProfileImage();
-                }
-            }
-        } else {
-            if (isChangeProfileImage) {
-                //비밀번호는 입력하지 않았지만 프로필 이미지를 바꿨을 때
-                updateProfileImage();
-            }
+        // 새 비밀번호, 새 비밀번호 확인 일치 체크
+        if ( !newPasswordFirst.equals(newPasswordSecond) ) {
+            Snackbar.make(contentsLinearLayout, R.string.new_password_not_matched, Snackbar.LENGTH_LONG).show();
+            return;
         }
 
-
-        Intent resultIntent = getIntent();
-        setResult(RESULT_OK, resultIntent);
-        finish();
-    }
-
-    private boolean checkNewPasswordValidate() {
-        //새비밀번호 와 새비밀번호확인 이 같은지 검사
-        String newPasswordFirst = editTextProfileManagerNewPasswordFirst.getText().toString();
-        String newPasswordSecond = editTextProfileManagerNewPasswordSecond.getText().toString();
-
-        if (newPasswordFirst.equals(newPasswordSecond)) {
-            return true;
-        }
-
-        return false;
+        new UserUpdateTask().execute(LoginApplication.user.getEmail(),
+                Encryption.getMD5(originalPassword),
+                LoginApplication.user.getNickname(),
+                Encryption.getMD5(newPasswordFirst),
+                isChangeProfileImage,
+                resultImageFile);
     }
 
     @OnClick(R.id.textViewProfilePrivateInfoPolicy)
     public void onPrivateInfoPolicyClick() {
-        String privateInfoPolicyURL = "https://blog.naver.com/tyrano_1/221281685956";
+        String privateInfoPolicyURL = PRIVACY_POLICY_INFO;
 
         Intent webpageIntent = new Intent(Intent.ACTION_VIEW);
         webpageIntent.setData(Uri.parse(privateInfoPolicyURL));
@@ -175,30 +161,19 @@ public class ProfileManagerActivity extends AppCompatActivity {
 
     @OnClick(R.id.textViewProfileManagerDelete)
     public void onProfileDeleteClick() {
-        final Intent profileDeleteIntent = new Intent(this, LoginActivity.class);
-        profileDeleteIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        profileDeleteIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText passwordEditText = new EditText(this);
-        passwordEditText.setHint(getString(R.string.password_current));
+        passwordEditText.setHint("비밀번호를 입력해주세요.");
+        passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
         builder.setView(passwordEditText)
                 .setMessage(getString(R.string.profile_delete_alert_dialog))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String inputPassword = passwordEditText.getText().toString();
-                        boolean isDeleted = deleteUser(inputPassword);
-
-                        if (isDeleted) {
-                            //삭제 성공
-                            startActivity(profileDeleteIntent);
-                            finish();
-                        } else {
-                            //삭제 실패
-                            Toast.makeText(getApplicationContext(), "비밀번호를 확인해주세요.", Toast.LENGTH_LONG).show();
-                        }
+                        String password = Encryption.getMD5(passwordEditText.getText().toString().trim());
+                        new UserDeleteTask().execute(LoginApplication.user.getEmail(), password);
                     }
                 })
                 .setNegativeButton("CANCLE", new DialogInterface.OnClickListener() {
@@ -211,33 +186,79 @@ public class ProfileManagerActivity extends AppCompatActivity {
 
     }
 
+    // AsyncTask ====================================================================================
+    public class UserUpdateTask extends AsyncTask<Object, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBarShow.getProgressBarShowSingleton(ProfileManagerActivity.this).show(coordinatorLayout);
+        }
 
-    private void updateUserInfo() {
-        ProfileManagerModel.updateUserInfo(
-                getApplicationContext(),
-                LoginApplication.user.getEmail(),
-                Encryption.getEncryptedAES(editTextProfileManagerPasswordOriginal.getText().toString()),
-                LoginApplication.user.getNickname(),
-                Encryption.getEncryptedAES(editTextProfileManagerNewPasswordFirst.getText().toString())
-                );
+        @Override
+        protected Boolean doInBackground(Object... params) {
+            String email = (String)params[0];
+            String password = (String)params[1];
+            String nickname = (String)params[2];
+            String newpassword = (String)params[3];
+            boolean isChangeProfileImage = (boolean)params[4];
+            File imageFile = (File)params[5];
 
+            boolean isUpdated = ProfileManagerModel.updateUserInfo(email, password, nickname, newpassword, isChangeProfileImage, imageFile);
+
+            return isUpdated;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isUpdated) {
+            super.onPostExecute(isUpdated);
+            ProgressBarShow.getProgressBarShowSingleton(ProfileManagerActivity.this).remove(coordinatorLayout);
+
+            if ( isUpdated ) {
+                Intent intent = getIntent();
+                setResult(RESULT_OK, intent);
+
+                finish();
+            } else {
+                String message = "인터넷 연결이 원활하지 않습니다. 잠시후 다시 시도해주세요.";
+                Toast.makeText(ProfileManagerActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
-    private void updateProfileImage() {
-        ProfileManagerModel.uploadProfileImage(
-                getApplicationContext(),
-                resultImageFile,
-                LoginApplication.user.getEmail(),
-                LoginApplication.user.getPassword(),
-                LoginApplication.user.getNickname()
-        );
-    }
+    public class UserDeleteTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBarShow.getProgressBarShowSingleton(ProfileManagerActivity.this).show(coordinatorLayout);
+        }
 
-    private boolean deleteUser(String password){
-        return ProfileManagerModel.deleteUser(
-                getApplicationContext(),
-                LoginApplication.user.getEmail(),
-                password
-        );
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String email = params[0];
+            String password = params[1];
+
+            boolean isDeleted = ProfileManagerModel.deleteUser(email, password);
+            return isDeleted;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isDeleted) {
+            super.onPostExecute(isDeleted);
+            ProgressBarShow.getProgressBarShowSingleton(ProfileManagerActivity.this).remove(coordinatorLayout);
+
+            if (isDeleted) {
+                //삭제 성공
+                Intent intent = new Intent(ProfileManagerActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                startActivity(intent);
+                finish();
+            } else {
+                //삭제 실패
+                Toast.makeText(getApplicationContext(), "비밀번호를 확인해주세요.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
+    // ==============================================================================================
 }

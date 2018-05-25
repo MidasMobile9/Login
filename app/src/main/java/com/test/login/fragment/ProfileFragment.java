@@ -19,7 +19,6 @@ import com.test.login.activity.LoginActivity;
 import com.test.login.activity.MainActivity;
 import com.test.login.activity.ProfileManagerActivity;
 import com.test.login.application.LoginApplication;
-import com.test.login.data.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +36,7 @@ public class ProfileFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private final String PROFILE_BASE_URL = "http://35.187.156.145:3000/profileimg/";
+    private final String PROFILE_URL_HEADER = "http://35.187.156.145:3000/profileimg/";
 
     private String mParam1;
     private String mParam2;
@@ -97,10 +96,9 @@ public class ProfileFragment extends Fragment {
         super.onResume();
 
         // 유저 프로필 사진 세팅
-        LoginApplication.setUser(1, "eee@eee.com", "nana", "baseprofile.png");
         if ( user.getProfileimg() != null ) {
             Glide.with(ProfileFragment.this)
-                    .load(PROFILE_BASE_URL + user.getProfileimg())
+                    .load(PROFILE_URL_HEADER + LoginApplication.user.getProfileimg())
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(circleImageViewProfileFragmentProfileImage);
@@ -111,9 +109,9 @@ public class ProfileFragment extends Fragment {
                     .into(circleImageViewProfileFragmentProfileImage);
         }
         // 유저 닉네임 세팅
-        textViewProfileFragmentProfileNickname.setText(user.getNickname());
+        textViewProfileFragmentProfileNickname.setText(LoginApplication.user.getNickname());
         // 유저 이메일 세팅
-        textViewProfileFragmentProfileEmail.setText(user.getEmail());
+        textViewProfileFragmentProfileEmail.setText(LoginApplication.user.getEmail());
     }
 
     @Override
